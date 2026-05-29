@@ -44,11 +44,18 @@ class ParsedConversation(BaseModel):
     has_malformed_roles: bool
     original_turns: List[Dict[str, Any]]
 
+class PIIResult(BaseModel):
+    """Schema for PII detection and redaction."""
+    pii_detected: bool
+    detected_pii_types: List[str]
+    redacted_text: str
+
 class SafetyResult(BaseModel):
     """Schema for safety and PII detection results."""
     attack_detected: bool
     attack_type: Optional[str] = None
     pii_detected: bool = False
+    detected_pii_types: List[str] = Field(default_factory=list)
     risk_level: RiskLevelEnum
     escalation_recommended: bool
     confidence_score: float = Field(ge=0.0, le=1.0)
@@ -56,9 +63,9 @@ class SafetyResult(BaseModel):
 
 class RetrievalResult(BaseModel):
     """Schema for RAG retrieval results."""
-    relevant_chunks: List[str]
+    retrieved_chunks: List[str]
     source_documents: List[str]
-    confidence_score: float = Field(ge=0.0, le=1.0)
+    retrieval_scores: List[float]
     
     @property
     def formatted_sources(self) -> str:
