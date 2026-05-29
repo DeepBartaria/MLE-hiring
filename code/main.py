@@ -1,46 +1,32 @@
 import argparse
 import sys
-from code.utils.seed import set_seed
+import os
+from code.orchestration.batch_processor import BatchProcessor
 from code.utils.logger import get_logger
-from code.config import settings
 
 logger = get_logger(__name__)
 
-def parse_args():
-    parser = argparse.ArgumentParser(description="Multi-Domain Support Triage Agent")
-    parser.add_argument("--input", type=str, default="support_tickets/support_tickets.csv", 
-                        help="Path to the input tickets CSV file")
-    parser.add_argument("--output", type=str, default="support_tickets/output.csv", 
-                        help="Path to write the output predictions CSV")
-    return parser.parse_args()
-
 def main():
-    """
-    Main entrypoint for the CLI-based triage agent.
-    """
-    args = parse_args()
+    parser = argparse.ArgumentParser(description="MLE Hiring Challenge - Triage Agent")
+    parser.add_argument("--input", default="support_tickets/support_tickets.csv", help="Path to input CSV")
+    parser.add_argument("--output", default="support_tickets/output.csv", help="Path to output CSV")
+    parser.add_argument("--mock-llm", action="store_true", help="Use mock LLM for testing")
+    parser.add_argument("--workers", type=int, default=10, help="Number of parallel workers")
     
-    # 1. Guarantee determinism
-    set_seed(settings.random_seed)
-    logger.info("Initializing Support Triage Agent...")
-    logger.info(f"Using random seed: {settings.random_seed}")
+    args = parser.parse_args()
     
-    # 2. Scaffolding for Component Initialization
-    # TODO: Instantiate RetrievalAgent, SafetyAgent, RoutingAgent, Orchestrator
+    if not os.path.exists(args.input):
+        logger.error(f"Input file not found: {args.input}")
+        sys.exit(1)
+        
+    processor = BatchProcessor(
+        input_file=args.input,
+        output_file=args.output,
+        use_mock_llm=args.mock_llm,
+        max_workers=args.workers
+    )
     
-    # 3. Data Ingestion
-    logger.info(f"Loading input tickets from {args.input}")
-    # TODO: Load dataset and parse into schemas.SupportTicket objects
+    processor.process_all()
     
-    # 4. Processing Loop
-    logger.info("Starting processing loop...")
-    # TODO: Iterate through tickets, invoke Orchestrator, aggregate results
-    
-    # 5. Output Generation
-    logger.info(f"Writing structured output to {args.output}")
-    # TODO: Convert results to DataFrame and save as CSV
-    
-    logger.info("Evaluation run complete.")
-
 if __name__ == "__main__":
     main()
