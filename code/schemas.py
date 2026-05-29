@@ -1,5 +1,5 @@
 from pydantic import BaseModel, Field, ConfigDict
-from typing import List, Dict, Any
+from typing import List, Dict, Any, Optional
 from enum import Enum
 
 class StatusEnum(str, Enum):
@@ -34,16 +34,24 @@ class TicketInput(BaseModel):
 
 class ParsedConversation(BaseModel):
     """Intermediate schema for parsed conversation state."""
-    summary: str
+    raw_subject: str
+    raw_company: str
+    cleaned_subject: str
+    cleaned_company: str
     is_multi_turn: bool
     latest_user_message: str
+    combined_user_context: str
+    has_malformed_roles: bool
+    original_turns: List[Dict[str, Any]]
 
 class SafetyResult(BaseModel):
     """Schema for safety and PII detection results."""
-    is_safe: bool
-    pii_detected: bool
-    prompt_injection_detected: bool
+    attack_detected: bool
+    attack_type: Optional[str] = None
+    pii_detected: bool = False
     risk_level: RiskLevelEnum
+    escalation_recommended: bool
+    confidence_score: float = Field(ge=0.0, le=1.0)
     reasoning: str
 
 class RetrievalResult(BaseModel):
