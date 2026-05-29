@@ -77,6 +77,8 @@ class ClassificationResult(BaseModel):
     product_area: str
     request_type: RequestTypeEnum
     language: str
+    inferred_company: str
+    confidence_score: float = Field(ge=0.0, le=1.0)
 
 class EscalationDecision(BaseModel):
     """Schema for routing decision."""
