@@ -97,9 +97,10 @@ class IntakeAgent:
         """
         Process a single CSV row containing 'issue', 'subject', 'company'.
         """
-        raw_issue = row.get("issue", "")
-        raw_subject = row.get("subject", "")
-        raw_company = row.get("company", "None")
+        # Handle potential capitalization differences in CSV headers
+        raw_issue = row.get("issue", row.get("Issue", ""))
+        raw_subject = row.get("subject", row.get("Subject", ""))
+        raw_company = row.get("company", row.get("Company", "None"))
         
         # 1. Parse JSON safely
         original_turns, has_malformed = self.parse_issue(raw_issue)

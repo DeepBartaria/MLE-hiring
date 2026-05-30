@@ -55,6 +55,11 @@ class RetrievalAgent:
         for rank, (doc_id, _) in enumerate(bm25_results):
             rrf_scores[doc_id] = rrf_scores.get(doc_id, 0.0) + 1.0 / (rrf_k + rank + 1)
             
+        # Normalize RRF scores so max possible score is 1.0
+        max_possible_score = 2.0 / (rrf_k + 1)
+        for doc_id in rrf_scores:
+            rrf_scores[doc_id] /= max_possible_score
+            
         # Sort deterministically by RRF score (descending), tie-break by doc_id
         sorted_docs = sorted(rrf_scores.items(), key=lambda x: (-x[1], x[0]))
         

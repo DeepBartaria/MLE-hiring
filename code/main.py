@@ -26,6 +26,9 @@ def main():
         max_workers=args.workers
     )
     
+    logger.info("Initializing Retrieval Corpus from data/ ...")
+    processor.orchestrator.retrieval.initialize_corpus(["data/"])
+    
     processor.process_all()
     
 if __name__ == "__main__":

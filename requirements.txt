@@ -9,3 +9,4 @@ tiktoken
 beautifulsoup4
 openai
 anthropic
+google-generativeai

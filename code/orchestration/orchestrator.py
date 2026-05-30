@@ -49,9 +49,10 @@ class TriageOrchestrator:
             # 5. Retrieval
             if agent:
                 queries = agent.get_retrieval_queries(parsed)
-                retrieval_res = self.retrieval.retrieve(queries)
+                query = queries[0] if queries else parsed.latest_user_message
+                retrieval_res = self.retrieval.retrieve(query)
             else:
-                retrieval_res = self.retrieval.retrieve([parsed.latest_user_message])
+                retrieval_res = self.retrieval.retrieve(parsed.latest_user_message)
                 
             # 6. Tool Planner (Heuristic mock proposed tools)
             # A real LLM might propose tools. For deterministic logic, we use heuristic triggers.

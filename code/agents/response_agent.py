@@ -27,6 +27,9 @@ class ResponseGenerationAgent:
         self.use_mock_llm = use_mock_llm
         self.openai_key = os.getenv("OPENAI_API_KEY")
         self.anthropic_key = os.getenv("ANTHROPIC_API_KEY")
+        self.google_key = os.getenv("GOOGLE_API_KEY")
+        self.qwen_key = os.getenv("QWEN_API_KEY")
+        self.openrouter_key = os.getenv("OPEN_ROUTER_API")
 
     def generate(
         self,
@@ -72,7 +75,58 @@ class ResponseGenerationAgent:
 
     def _actual_llm_call(self, system: str, user: str) -> str:
         """Calls actual LLM using deterministic settings (temp=0.0)."""
-        if self.openai_key:
+        if hasattr(self, 'openrouter_key') and self.openrouter_key and self.openrouter_key != "YOUR_API_KEY":
+            try:
+                import openai
+                client = openai.OpenAI(
+                    api_key=self.openrouter_key,
+                    base_url="https://openrouter.ai/api/v1"
+                )
+                resp = client.chat.completions.create(
+                    model="deepseek/deepseek-v4-flash",
+                    messages=[
+                        {"role": "system", "content": system},
+                        {"role": "user", "content": user}
+                    ],
+                    temperature=0.0,
+                    seed=42
+                )
+                return resp.choices[0].message.content or ""
+            except Exception as e:
+                logger.error(f"OpenRouter call failed: {e}")
+        if hasattr(self, 'qwen_key') and self.qwen_key and self.qwen_key != "YOUR_API_KEY":
+            try:
+                import openai
+                client = openai.OpenAI(
+                    api_key=self.qwen_key,
+                    base_url="https://opencode.ai/zen/v1"
+                )
+                resp = client.chat.completions.create(
+                    model="qwen3.6-plus-free",
+                    messages=[
+                        {"role": "system", "content": system},
+                        {"role": "user", "content": user}
+                    ],
+                    temperature=0.0,
+                    seed=42
+                )
+                return resp.choices[0].message.content or ""
+            except Exception as e:
+                logger.error(f"Qwen call failed: {e}")
+        if hasattr(self, 'google_key') and self.google_key and self.google_key != "YOUR_API_KEY":
+            try:
+                import google.generativeai as genai
+                genai.configure(api_key=self.google_key)
+                model = genai.GenerativeModel('gemini-2.5-flash')
+                resp = model.generate_content(
+                    f"{system}\n\n{user}",
+                    generation_config=genai.types.GenerationConfig(temperature=0.0)
+                )
+                return resp.text
+            except Exception as e:
+                logger.error(f"Google call failed: {e}")
+
+        if self.openai_key and self.openai_key != "YOUR_API_KEY":
             try:
                 import openai
                 client = openai.OpenAI(api_key=self.openai_key)
@@ -89,12 +143,12 @@ class ResponseGenerationAgent:
             except Exception as e:
                 logger.error(f"OpenAI call failed: {e}")
                 
-        elif self.anthropic_key:
+        if self.anthropic_key and self.anthropic_key != "YOUR_API_KEY":
             try:
                 import anthropic
                 client = anthropic.Anthropic(api_key=self.anthropic_key)
                 resp = client.messages.create(
-                    model="claude-3-haiku-20240307",
+                    model="claude-sonnet-4-6",
                     max_tokens=500,
                     temperature=0.0,
                     system=system,

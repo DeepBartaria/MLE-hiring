@@ -28,8 +28,7 @@ The system executes a deterministic sequence of guardrail agents:
    ```
 3. Set your API Keys (for live LLM generation):
    ```bash
-   export OPENAI_API_KEY="your-key-here"
-   export ANTHROPIC_API_KEY="your-key-here"
+   export OPEN_ROUTER_API="your-key-here"
    ```
 
 ## Running the Agent
@@ -42,7 +41,7 @@ To run the agent using the Mock LLM (for fast offline testing):
 PYTHONPATH=. python code/main.py --input support_tickets/sample_support_tickets.csv --output support_tickets/output.csv --mock-llm
 ```
 
-To run the agent in Production Mode (calls OpenAI/Anthropic APIs):
+To run the agent in Production Mode (calls OpenAI/Anthropic APIs(recommended, but not available. using OpenRouter)):
 ```bash
 PYTHONPATH=. python code/main.py --input support_tickets/support_tickets.csv --output support_tickets/output.csv
 ```

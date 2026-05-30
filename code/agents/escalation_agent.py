@@ -61,9 +61,16 @@ class EscalationAgent:
             if len(retrieval.retrieval_scores) > 1:
                 second_score = retrieval.retrieval_scores[1]
                 delta = top_score - second_score
-                if top_score > self.RETRIEVAL_MIN_GROUNDING and delta < self.RETRIEVAL_CONFLICT_DELTA:
-                    should_escalate = True
-                    reasons.append(f"Conflicting retrieval evidence detected (Delta: {delta:.3f})")
+                
+                top_doc = retrieval.source_documents[0]
+                second_doc = retrieval.source_documents[1]
+                
+                # Only consider it conflicting if they come from DIFFERENT source documents
+                # and the score delta is extremely small (e.g. < 0.01) indicating a near tie.
+                if top_doc != second_doc:
+                    if top_score > 0.8 and delta < 0.01:
+                        should_escalate = True
+                        reasons.append(f"Conflicting retrieval evidence detected (Delta: {delta:.3f})")
                     
         # 4. Finalizing the Decision
         if should_escalate:
