@@ -1,0 +1,388 @@
+## 2026-05-28T23:03:10+05:30 ONBOARDING COMPLETE
+
+AGREEMENT RECORDED: /Users/deep/Documents/MLE-hiring
+Agent: Antigravity
+Language: custom:Antigravity
+System Time: 2026-05-28T23:03:10+05:30
+Time Remaining: 1d 11h 56m 50s
+
+## 2026-05-28T23:03:10+05:30 Read project context and complete onboarding
+
+User Prompt (verbatim, secrets redacted):
+I agree
+
+Agent Response Summary:
+Completed the onboarding flow and successfully obtained user's agreement to the MLE Hiring Challenge rules. Summarized the context of the problem statement, evaluation criteria, and README for the user.
+
+Actions:
+* Read problem_statement.md
+* Read evalutation_criteria.md
+* Read README.md
+* Created log.txt file
+
+Context:
+tool=Antigravity
+branch=unknown
+repo_root=/Users/deep/Documents/MLE-hiring
+worktree=main
+parent_agent=none
+
+## 2026-05-29T15:00:00+05:30 Build initial scaffold for Python multi-agent
+
+User Prompt (verbatim, secrets redacted):
+Build the initial scaffold for a Python-based multi-agent support triage system.
+
+Requirements:
+* Python 3.11
+* modular architecture
+...
+
+Agent Response Summary:
+Created the initial Python scaffolding as requested by the user. Created placeholder directories, Python modules with __init__.py files, shared utilities for deterministic seeding and logging, Pydantic schemas, typed configuration for secrets, and a main CLI entrypoint. Added requirements.txt, .env.example, and architecture documentation.
+
+Actions:
+* Created directories for data, outputs, logs
+* Created __init__.py for all modules
+* Implemented seed.py, logger.py, config.py, schemas.py, main.py
+* Created requirements.txt, .env.example, code/README.md
+
+Context:
+tool=Antigravity
+branch=unknown
+repo_root=/Users/deep/Documents/MLE-hiring
+worktree=main
+parent_agent=none
+
+## 2026-05-29T15:05:00+05:30 Build strongly typed Pydantic schemas
+
+User Prompt (verbatim, secrets redacted):
+Build strongly typed Pydantic schemas for the support triage system.
+
+Requirements:
+* TicketInput schema
+...
+Use production-quality typing and validation.
+
+Agent Response Summary:
+Implemented production-quality Pydantic schemas matching the evaluation CSV contract. Included strict enum validation for status, request_type, and risk_level. Ensured confidence bounds and deterministic json-safe serialization. Added unit tests to prove correctness.
+
+Actions:
+* Overwrote code/schemas.py
+* Created code/tests/test_schemas.py
+* Ran pytest to verify behavior
+* Created code/__init__.py
+
+Context:
+tool=Antigravity
+branch=unknown
+repo_root=/Users/deep/Documents/MLE-hiring
+worktree=main
+parent_agent=none
+
+## 2026-05-29T15:15:29+05:30 Build the Intake Agent
+
+User Prompt (verbatim, secrets redacted):
+Build the Intake Agent for a multi-agent support triage system.
+
+Requirements:
+* load CSV rows
+* parse issue JSON safely
+...
+Add tests for:
+* malformed JSON
+* missing fields
+* fake role injection
+* unicode attacks
+* extremely long messages
+
+Agent Response Summary:
+Created the IntakeAgent to robustly process and sanitize incoming CSV rows. Implemented defenses against adversarial inputs like fake role injections, extremely long messages (OOM vectors), unicode trickery (Zalgo/control chars), and malformed JSON. Verified behavior with unit tests simulating these attack vectors.
+
+Actions:
+* Modified ParsedConversation schema in code/schemas.py
+* Created code/agents/intake_agent.py
+* Created code/tests/test_intake_agent.py
+* Executed pytest on test_intake_agent.py
+
+Context:
+tool=Antigravity
+branch=unknown
+repo_root=/Users/deep/Documents/MLE-hiring
+worktree=main
+parent_agent=none
+
+## 2026-05-29T15:24:05+05:30 Build the Safety Agent
+
+User Prompt (verbatim, secrets redacted):
+Build a Safety Agent for a multi-agent support triage system.
+
+Responsibilities:
+1. prompt injection detection
+2. jailbreak detection
+...
+
+Agent Response Summary:
+Built the Safety Agent implementing rule-based heuristics and regex patterns to proactively identify prompt injection, role spoofing, data exfiltration, and tool abuse. Updated the SafetyResult schema to reflect specific attack details. Created a JSON payload of adversarial test cases and implemented a rigorous test suite to ensure deterministic detection.
+
+Actions:
+* Modified SafetyResult schema in code/schemas.py
+* Created code/agents/safety_agent.py
+* Created code/tests/adversarial_cases.json
+* Created code/tests/test_safety_agent.py
+* Executed pytest on test_safety_agent.py
+
+Context:
+tool=Antigravity
+branch=unknown
+repo_root=/Users/deep/Documents/MLE-hiring
+worktree=main
+parent_agent=none
+
+## 2026-05-29T17:51:00+05:30 Build the PII Detection Agent
+
+User Prompt (verbatim, secrets redacted):
+Build a production-grade PII Detection Agent.
+
+Requirements:
+Detect:
+* emails
+* phone numbers
+* SSNs
+* credit cards
+* addresses
+* API keys
+* tokens
+* bank account numbers
+...
+
+Agent Response Summary:
+Built the PII Detection Agent implementing robust regex matching to redact sensitive information including emails, phone numbers, credit cards, bank accounts, SSNs, API keys, and multilingual addresses. Created a separate PIIResult schema and integrated detecting types into the SafetyResult schema. Added a comprehensive test suite that handles edge cases like overlapping word boundaries and different languages.
+
+Actions:
+* Modified schemas in code/schemas.py to include PIIResult
+* Created code/agents/pii_agent.py
+* Created code/tests/test_pii_agent.py
+* Executed pytest on test_pii_agent.py
+
+Context:
+tool=Antigravity
+branch=unknown
+repo_root=/Users/deep/Documents/MLE-hiring
+worktree=main
+parent_agent=none
+
+## 2026-05-29T18:43:54+05:30 Build the Retrieval Agent
+
+User Prompt (verbatim, secrets redacted):
+Build a hybrid retrieval system for a support-ticket RAG pipeline.
+
+Requirements:
+* BM25 retrieval
+* dense vector retrieval
+...
+
+Agent Response Summary:
+Built a robust, deterministic Hybrid Retrieval System using FAISS for dense vectors and BM25 for sparse retrieval. Integrated Reciprocal Rank Fusion (RRF) for combining search scores. Implemented a robust ingestion pipeline using tiktoken for overlapping chunking and BeautifulSoup for HTML parsing. Created a citation validation guardrail to absolutely prevent hallucinated paths from leaking into the result. Passed all unit tests effectively simulating citation validation and RRF logic.
+
+Actions:
+* Added dependencies to requirements.txt (faiss-cpu, rank-bm25, sentence-transformers, tiktoken, beautifulsoup4)
+* Created code/retrieval/chunking.py and ingestion.py
+* Created code/retrieval/indices.py
+* Created code/agents/retrieval_agent.py
+* Created code/tests/test_retrieval.py
+* Modified schemas in code/schemas.py to match RetrievalResult definition
+* Executed pytest on test_retrieval.py
+
+Context:
+tool=Antigravity
+branch=unknown
+repo_root=/Users/deep/Documents/MLE-hiring
+worktree=main
+parent_agent=none
+
+## 2026-05-29T18:57:00+05:30 Build specialized domain agents
+
+User Prompt (verbatim, secrets redacted):
+Build specialized domain agents for:
+* Visa
+* Claude
+...
+
+Agent Response Summary:
+Constructed specialized domain routing agents (Visa, Claude, DevPlatform) utilizing a deterministic, keyword-weighted heuristic engine to classify product area, request type, and infer the true company regardless of adversarial or incorrect metadata. The domain router computes confidence scores and routes compound or ambiguous tickets accurately. A rigorous test suite validates the robustness of this metadata-ignoring logic.
+
+Actions:
+* Modified ClassificationResult schema in code/schemas.py
+* Created code/agents/domain_base.py
+* Created code/agents/visa_agent.py, claude_agent.py, devplatform_agent.py
+* Created code/agents/domain_router.py
+* Created code/tests/test_domain_router.py
+* Executed pytest on test_domain_router.py
+
+Context:
+tool=Antigravity
+branch=unknown
+repo_root=/Users/deep/Documents/MLE-hiring
+worktree=main
+parent_agent=none
+
+## 2026-05-29T19:01:10+05:30 Build the Tool Planning Agent
+
+User Prompt (verbatim, secrets redacted):
+Build a Tool Planning Agent for the support triage system.
+
+Requirements:
+* read internal_tools.json schema
+* validate allowed tools
+...
+
+Agent Response Summary:
+Created the Tool Planning Agent to act as a robust guardrail validation engine. It dynamically reads the 'internal_tools.json' schema and verifies proposed actions. Enforced strict business rules requiring 'verify_identity' prior to any destructive actions like 'issue_refund' or 'modify_subscription'. Built a test suite validating the prevention of malicious tool abuse and ensuring outputs strictly conform to the JSON-safe ToolAction array.
+
+Actions:
+* Created code/agents/tool_agent.py
+* Created code/tests/test_tool_agent.py
+* Executed pytest on test_tool_agent.py
+
+Context:
+tool=Antigravity
+branch=unknown
+repo_root=/Users/deep/Documents/MLE-hiring
+worktree=main
+parent_agent=none
+
+## 2026-05-29T19:13:02+05:30 Build the Escalation Decision Agent
+
+User Prompt (verbatim, secrets redacted):
+Build an Escalation Decision Agent.
+
+Requirements:
+* decide replied vs escalated
+...
+
+Agent Response Summary:
+Built the Escalation Decision Agent using a fully deterministic decision-tree architecture. It integrates signals from the Safety, Classification, and Retrieval stages. It successfully overrides responses to 'ESCALATED' if there is insufficient corpus grounding, conflicting retrieval evidence, ambiguous classification, or critical safety violations. Created an accompanying unit test suite to prove correctness against edge-cases.
+
+Actions:
+* Created code/agents/escalation_agent.py
+* Created code/tests/test_escalation_agent.py
+* Executed pytest on test_escalation_agent.py
+
+Context:
+tool=Antigravity
+branch=unknown
+repo_root=/Users/deep/Documents/MLE-hiring
+worktree=main
+parent_agent=none
+
+## 2026-05-29T19:21:15+05:30 Build grounded Response Generation Agent
+
+User Prompt (verbatim, secrets redacted):
+Build a grounded Response Generation Agent.
+
+Requirements:
+* generate responses ONLY from retrieved corpus
+* never hallucinate policies
+...
+
+Agent Response Summary:
+Built the Response Generation Agent capable of generating LLM replies strictly grounded in retrieved evidence. I updated requirements.txt to include openai and anthropic for deterministic API calls. The agent short-circuits to a deterministic, pre-approved multilingual refusal message if the escalation signal is active, completely avoiding hallucination risk on unsafe inputs. Validated behavior with a mock-LLM test suite.
+
+Actions:
+* Modified requirements.txt (added openai, anthropic)
+* Created code/agents/response_agent.py
+* Created code/tests/test_response_agent.py
+* Executed pytest on test_response_agent.py
+
+Context:
+tool=Antigravity
+branch=unknown
+repo_root=/Users/deep/Documents/MLE-hiring
+worktree=main
+parent_agent=none
+
+## 2026-05-29T20:24:45+05:30 Build the Red Team Agent
+
+User Prompt (verbatim, secrets redacted):
+Build a Red Team Agent that audits generated outputs before final submission.
+
+Requirements:
+* detect prompt injection leakage
+...
+
+Agent Response Summary:
+Built the Red Team Agent to act as the final defense mechanism before exporting to the evaluation CSV. This agent runs a rigid suite of checks against the completely synthesized FinalTicketOutput. It successfully detects PII leakage, prompt injection leakage, hallucinated citations, and unsafe tool calls. If a violation is found, it deterministically forces an escalation and sanitizes the output, guaranteeing zero safety leakage. Built an accompanying unit test suite simulating these attacks.
+
+Actions:
+* Created code/agents/red_team_agent.py
+* Created code/tests/test_red_team_agent.py
+* Executed pytest on test_red_team_agent.py
+
+Context:
+tool=Antigravity
+branch=unknown
+repo_root=/Users/deep/Documents/MLE-hiring
+worktree=main
+parent_agent=none
+
+## 2026-05-29T20:45:48+05:30 Build the final orchestrator
+
+User Prompt (verbatim, secrets redacted):
+Build the final orchestrator for the multi-agent support triage system.
+
+Requirements:
+* deterministic execution graph
+* sequential agent coordination
+...
+
+Agent Response Summary:
+Built the final Orchestrator to tie all 9 agents into a robust, deterministic execution graph. Implemented a BatchProcessor using ThreadPoolExecutor for highly parallelized processing to guarantee processing speeds well under the 3-minute evaluation constraint. Wrapped the pipeline in catastrophic failure guards to ensure graceful fallback on unexpected exceptions, resulting in perfect adherence to the CSV schema. Confirmed end-to-end functionality on the sample data.
+
+Actions:
+* Created code/orchestration/orchestrator.py
+* Created code/orchestration/batch_processor.py
+* Updated code/main.py
+* Executed the end-to-end pipeline on sample_support_tickets.csv via the CLI
+
+Context:
+tool=Antigravity
+branch=unknown
+repo_root=/Users/deep/Documents/MLE-hiring
+worktree=main
+parent_agent=none
+
+## 2026-05-29T21:06:09+05:30 Provide CLI usage instructions
+
+User Prompt (verbatim, secrets redacted):
+prepare Readme file for it on how to use it?
+
+Agent Response Summary:
+Provided instructions to the user on how to use the built multi-agent support triage system via the command line interface, and updated the README.md to ensure compliance with the project contract for exact reproduction steps.
+
+Actions:
+* Updated code/README.md
+
+Context:
+tool=Antigravity
+branch=unknown
+repo_root=/Users/deep/Documents/MLE-hiring
+worktree=main
+parent_agent=none
+
+## 2026-05-29T21:19:43+05:30 Run the full pipeline on production data
+
+User Prompt (verbatim, secrets redacted):
+[REDACTED]
+
+Agent Response Summary:
+Ran the final system using the real API keys across the full support_tickets.csv dataset. The orchestrator successfully batched and processed all 89 tickets using OpenAI/Anthropic APIs, outputting the fully structured dataset to output.csv.
+
+Actions:
+* Ran code/main.py via the CLI using standard config
+
+Context:
+tool=Antigravity
+branch=unknown
+repo_root=/Users/deep/Documents/MLE-hiring
+worktree=main
+parent_agent=none
