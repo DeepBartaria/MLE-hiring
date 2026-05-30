@@ -24,7 +24,7 @@ We implemented a **Hybrid Search Pipeline using Reciprocal Rank Fusion (RRF)**.
 * **Sparse Retrieval (BM25):** Ensures precision for exact keyword matches, error codes, and strict policy terminology.
 
 **Why RRF?**
-RRF allows us to combine dense and sparse rankings mathematically without needing to manually tune weighted combinations (which are notoriously brittle across different domains). We retrieve the top `k*3` candidates from both indices, compute RRF scores, and then apply a novel mathematical normalization (`score /= (2.0 / (k + 1))`) to bind scores between `[0.0, 1.0]`. This bounded score is critical for the `EscalationDecisionAgent` to accurately measure corpus grounding.
+We retrieve the top `k*3` candidates from both indices, compute RRF scores, and then apply a novel mathematical normalization (`score /= (2.0 / (k + 1))`) to bind scores between `[0.0, 1.0]`. This bounded score is critical for the `EscalationDecisionAgent` to accurately measure corpus grounding.
 
 ## Safety & Adversarial Handling
 
@@ -94,3 +94,19 @@ The `EscalationDecisionAgent` prioritizes safety over answering. A ticket is imm
  │   Output CSV    │
  └─────────────────┘
 ```
+
+## Self-Assessment & Hidden Test Set Reflections
+
+Our core design rationale was that **modular determinism and safety** are more important than minimizing API calls or latency. Rather than relying on a single "god prompt" to handle routing, retrieval, safety, and response generation, we broke the pipeline into 9 distinct, isolated agents. 
+
+### Predictions vs. Reality (Hidden Test Set)
+We predicted that the hidden test set would severely test the system's ability to handle out-of-distribution adversarial attacks (zero-day prompt injections, social engineering) rather than simple FAQ memorization. 
+
+Our Dual-Layer Adversarial Firewall (`SafetyAgent` on input, `RedTeamAgent` on output) was designed exactly for this. By auditing the final synthesized string, we successfully caught instances where the LLM was manipulated into leaking PII or system instructions. However, we acknowledge that an LLM-based Red Team agent is itself susceptible to highly sophisticated, meta-level prompt injections, which remains a theoretical vulnerability.
+
+### Acknowledged Failure Modes & Trade-offs
+We recognize that our architecture is not perfect and made explicit trade-offs:
+
+1. **Over-Escalation Risk:** We intentionally set the grounding confidence threshold tightly (`0.3`). The failure mode here is that tersely worded, valid user queries that lack strong semantic or keyword overlap with our FAISS/BM25 index will be unnecessarily escalated to humans. We prioritized avoiding hallucinations over automation percentage.
+2. **PII Heuristic Gaps:** Our `PiiAgent` relies on regex and deterministic heuristics to redact sensitive data *before* LLM generation. While effective for standard US formats (Emails, SSNs, standard CCs), highly unusual or international PII formats might slip through to the LLM. If the `RedTeamAgent` fails to catch the echo, PII could be leaked.
+3. **Latency and Cost Constraints:** Running a 9-agent pipeline where safety and auditing require their own LLM calls severely throttles batch throughput. While acceptable for a 150-ticket test set, scaling this architecture to 100k+ daily tickets would require migrating to an asynchronous execution model and potentially distilling the safety checks into smaller, locally hosted models to reduce API overhead.
